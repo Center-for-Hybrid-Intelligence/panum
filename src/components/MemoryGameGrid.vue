@@ -1,19 +1,25 @@
 <template>
   <div class="flex justify-center items-center min-h-screen">
-    <button @click="onStart">Start level: {{level}}</button>
+    <div class="flex flex-col">
 
+    <button @click="onStart">Start level: {{level}}</button>
+      <div v-if="chooseColor">Choose the latest {{Object.keys(lastColorIndex)[currentColorGuess]}}</div>
     <div class="grid grid-cols-3 gap-3">
       <Square
-          v-for="(color, index) in squares"
+          v-for="(tileColor, index) in squares"
           :key="index"
-          :color="color"
+          :color="tileColor"
+          :index="index"
+          @choice="onChoice(index)"
       />
     </div>
     <div class="flex flex-col">
       <button @click="levelUp">levelUp</button>
       <button @click="levelDown">levelDown</button></div>
-    {{lastColorIndex}}
 
+      
+
+    </div>
   </div>
 
 
@@ -32,6 +38,8 @@ export default {
     const squares = ref(Array(9).fill('')); // Initialize with empty strings
     const level = ref(2);
     const allColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']; // All possible colors
+    const chooseColor = ref(null);
+    const currentColorGuess = ref(0);
     const colors = computed(() => {
       return allColors.slice(0, level.value); // Return the first 'level' colors
     });
@@ -46,6 +54,28 @@ export default {
       if (level.value > 2)
       level.value--;
      }
+
+     const onChoice = (index) => {
+       console.log(Object.values(lastColorIndex.value)[currentColorGuess.value])
+       let currentColorIndex = Object.values(lastColorIndex.value)[currentColorGuess.value]
+       console.log(currentColorIndex, index)
+       if (currentColorIndex === index) {
+        console.log('correct')
+      }
+       else {
+        console.log('wrong')
+       }
+        squares.value[index] = '';
+        if (currentColorGuess.value < level.value - 1) {
+          currentColorGuess.value++;
+          console.log('next')
+        } else {
+        currentColorGuess.value = 0;
+        chooseColor.value = false;
+          console.log('done')
+      }
+      }
+
     function shuffle(array) {
       let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -87,7 +117,6 @@ export default {
       for (let i = 0; i < shuffledColors.length; i++) {
         setTimeout(() => {
           const randomColor = shuffledColors[i];
-
           let randomIndex;
           // Keep picking a random square until we find one that's not already displaying the current color
           do {
@@ -104,24 +133,20 @@ export default {
           colorCounts[randomColor]++;
           lastColorIndex.value[randomColor] = randomIndex;
 
-          // Set a new timeout to revert the color back to gray after 200 milliseconds
+          // Set a new timeout to revert the color back to gray after 1000 milliseconds
           timeouts[randomIndex] = setTimeout(() => {
             colorCounts[squares.value[randomIndex]]--; // Decrement the count for the current color
             squares.value[randomIndex] = '';
-          }, 200);
+          }, 1000);
 
-        }, i * 200); // Delay each color change by 200 milliseconds
+        }, i * 1000); // Delay each color change by 1000 milliseconds
+
+        chooseColor.value = true;
       }
     }
 
 
-
-
-
-
-
-
-    return { squares, onStart, levelUp, levelDown, level, allColors, colors, lastColorIndex };
+    return { squares, onStart, levelUp, levelDown, level, allColors, colors, lastColorIndex, onChoice, chooseColor, currentColorGuess };
   },
 };
 </script>
