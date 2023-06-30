@@ -1,8 +1,8 @@
 <template>
   <div class="flex justify-center items-center min-h-screen">
     <button @click="onStart">Start level: {{level}}</button>
-    <div class="grid grid-cols-3 gap-3">
 
+    <div class="grid grid-cols-3 gap-3">
       <Square
           v-for="(color, index) in squares"
           :key="index"
@@ -12,6 +12,8 @@
     <div class="flex flex-col">
       <button @click="levelUp">levelUp</button>
       <button @click="levelDown">levelDown</button></div>
+    {{lastColorIndex}}
+
   </div>
 
 
@@ -33,6 +35,7 @@ export default {
     const colors = computed(() => {
       return allColors.slice(0, level.value); // Return the first 'level' colors
     });
+    const lastColorIndex = ref(null);
     // Every color has to show up the same as the level
 
     function levelUp() {
@@ -64,10 +67,11 @@ export default {
     function onStart() {
       const timeouts = Array(squares.value.length).fill(null);
       let colorCounts = colors.value.reduce((counts, color) => ({...counts, [color]: 0}), {});
+      lastColorIndex.value = colors.value.reduce((indices, color) => ({...indices, [color]: null}), {}); // Add this line
 
       // Create an array of all the colors that will be used
       let allColors = [];
-      for (let i = 0; i < level.value; i++) {
+      for (let lvl = 0; lvl < level.value; lvl++) {
         allColors = allColors.concat(colors.value);
       }
 
@@ -84,7 +88,6 @@ export default {
           } while (squares.value[randomIndex] === randomColor);
 
           console.log(randomIndex, randomColor)
-
           // Clear existing timeout for this square
           if (timeouts[randomIndex]) {
             clearTimeout(timeouts[randomIndex]);
@@ -92,14 +95,15 @@ export default {
 
           squares.value[randomIndex] = randomColor;
           colorCounts[randomColor]++;
+          lastColorIndex.value[randomColor] = randomIndex; // Save the index of this color
 
           // Set a new timeout to revert the color back to gray after 1 second
           timeouts[randomIndex] = setTimeout(() => {
             colorCounts[squares.value[randomIndex]]--; // Decrement the count for the current color
             squares.value[randomIndex] = '';
-          }, 1000);
+          }, 200);
 
-        }, i * 1000); // Delay each color change by 1 second
+        }, i * 200); // Delay each color change by 1 second
       }
     }
 
@@ -108,7 +112,8 @@ export default {
 
 
 
-    return { squares, onStart, levelUp, levelDown, level, allColors, colors };
+
+    return { squares, onStart, levelUp, levelDown, level, allColors, colors, lastColorIndex };
   },
 };
 </script>
