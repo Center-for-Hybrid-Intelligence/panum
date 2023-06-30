@@ -65,47 +65,55 @@ export default {
       return array;
     }
     function onStart() {
+      // Initialize an array to hold timeout IDs for each square
       const timeouts = Array(squares.value.length).fill(null);
+
+      // Initialize an object to count how many times each color has been used
       let colorCounts = colors.value.reduce((counts, color) => ({...counts, [color]: 0}), {});
-      lastColorIndex.value = colors.value.reduce((indices, color) => ({...indices, [color]: null}), {}); // Add this line
+
+      // Initialize an object to track the last grid index where each color was used
+      lastColorIndex.value = colors.value.reduce((indices, color) => ({...indices, [color]: null}), {});
 
       // Create an array of all the colors that will be used
       let allColors = [];
-      for (let lvl = 0; lvl < level.value; lvl++) {
+      for (let i = 0; i < level.value; i++) {
         allColors = allColors.concat(colors.value);
       }
 
       // Shuffle the array of colors
       let shuffledColors = shuffle(allColors);
 
+      // Loop over the shuffled colors
       for (let i = 0; i < shuffledColors.length; i++) {
         setTimeout(() => {
           const randomColor = shuffledColors[i];
 
           let randomIndex;
+          // Keep picking a random square until we find one that's not already displaying the current color
           do {
             randomIndex = Math.floor(Math.random() * squares.value.length);
           } while (squares.value[randomIndex] === randomColor);
 
-          console.log(randomIndex, randomColor)
           // Clear existing timeout for this square
           if (timeouts[randomIndex]) {
             clearTimeout(timeouts[randomIndex]);
           }
 
+          // Change the color of the square, increment the color count, and update the last index for the color
           squares.value[randomIndex] = randomColor;
           colorCounts[randomColor]++;
-          lastColorIndex.value[randomColor] = randomIndex; // Save the index of this color
+          lastColorIndex.value[randomColor] = randomIndex;
 
-          // Set a new timeout to revert the color back to gray after 1 second
+          // Set a new timeout to revert the color back to gray after 200 milliseconds
           timeouts[randomIndex] = setTimeout(() => {
             colorCounts[squares.value[randomIndex]]--; // Decrement the count for the current color
             squares.value[randomIndex] = '';
           }, 200);
 
-        }, i * 200); // Delay each color change by 1 second
+        }, i * 200); // Delay each color change by 200 milliseconds
       }
     }
+
 
 
 
