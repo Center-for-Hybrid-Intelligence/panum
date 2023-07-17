@@ -1,8 +1,8 @@
 <template>
   <div class="flex justify-center items-center min-h-screen">
-    <div class="flex flex-col">
+    <div class="flex flex-col gap-2 items-center">
 
-    <button @click="onStart">Start level: {{level}}</button>
+    <button class="button" @click="onStart">Start level: {{level}}</button>
       <div v-if="chooseColor">Choose the latest {{Object.keys(lastColorIndex)[currentColorGuess]}}</div>
     <div class="grid grid-cols-3 gap-3">
       <Square
@@ -13,9 +13,9 @@
           @choice="onChoice(index)"
       />
     </div>
-    <div class="flex flex-col">
-      <button @click="levelUp">levelUp</button>
-      <button @click="levelDown">levelDown</button></div>
+    <div class="flex flex-col gap-2 items-center">
+      <button class="buttonSecondary" @click="levelUp">levelUp</button>
+      <button class="buttonSecondary" @click="levelDown">levelDown</button></div>
 
       
 
