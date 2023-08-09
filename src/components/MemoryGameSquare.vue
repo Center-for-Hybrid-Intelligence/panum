@@ -1,10 +1,14 @@
 <template>
   <div
-      class="w-24 h-24 bg-gray-800 rounded-2xl bg-gray-200"
+      class="w-24 h-24 bg-gray-600 rounded-2xl bg-gray-200"
       :style="{ backgroundColor: color }"
       @click="emitChoice"
 
-  ><span class="text-white">{{color}} {{index}}</span></div>
+  >
+<!--
+    <span class="text-white">{{color}} {{index}}</span>
+-->
+  </div>
 </template>
 
 <script>
