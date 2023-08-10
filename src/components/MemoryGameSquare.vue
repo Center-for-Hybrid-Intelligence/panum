@@ -1,14 +1,14 @@
 <template>
-  <div
+  <button
       class="w-24 h-24 bg-gray-600 rounded-2xl bg-gray-200"
       :style="{ backgroundColor: color }"
       @click="emitChoice"
-
+      :disabled="disabled"
   >
 <!--
     <span class="text-white">{{color}} {{index}}</span>
 -->
-  </div>
+  </button>
 </template>
 
 <script>
@@ -27,9 +27,13 @@ export default {
       default: 0,
       required: true,
     },
+    disabled: {
+      default:true,
+      type: Boolean,
+      required: true,
+    }
   },
   setup(props, { emit }) {
-
     const emitChoice = () => {
       emit('choice', props.index);
       console.log(props.index)

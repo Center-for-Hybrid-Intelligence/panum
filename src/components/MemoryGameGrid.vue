@@ -3,11 +3,15 @@
     <div class="flex flex-col gap-2 items-center">
 
       <h2 class="text-5xl font-bold">Current Level: {{ level }}</h2>
-      <div class="flex gap-2 items-center p-4">
+      <div class="flex gap-2 items-center pt-4">
         <h2>Current colors:</h2>
 
         <div v-for="(color, index) in colors" :key="index" class="w-8 h-8 rounded-md"
              :class="`bg-${color}-500`"></div>
+      </div>
+      <div class="flex flex-col relative items-center h-8 w-full">
+        <p class="absolute inset-0 top-5 text-green-500 text-xl transition-all duration-200 transform translate-y-0" :class="{ 'opacity-100 transform -translate-y-5': isCorrect, 'opacity-0': !isCorrect }" >That's correct, Well Done</p>
+        <p class="absolute inset-0 top-5 text-red-500 text-xl transition-all duration-200  transform translate-y-0" :class="{ 'opacity-100 transform -translate-y-5': isCorrect === false, 'opacity-0': isCorrect === true || isCorrect === null  }">That's wrong</p>
       </div>
       <!--        <div class="w-8 h-8 rounded-md bg-red-500">
               </div>
@@ -21,7 +25,11 @@
               </div>
               <div class="w-8 h-8 rounded-md bg-orange-500">
               </div>-->
-      <div class="flex gap-4 relative">
+      <div class="flex gap-4 h-full relative">
+        <div class="w-36 flex justify-center items-center ">
+          <p2 class="transition-transform duration-200 transform font-bold text-2xl" :class="{ '-translate-y-2': scoreChanged }">Score: {{ score }}</p2>
+
+        </div>
         <div class="grid grid-cols-3 gap-3">
           <Square
               v-for="(tileColor, index) in squares"
@@ -29,19 +37,23 @@
               :color="tileColor"
               :index="index"
               @choice="onChoice(index)"
+              :disabled="squaresDisabled"
           />
+
         </div>
-        <div class="flex flex-col absolute -right-36 gap-8  h-full justify-center">
+        <div class="flex flex-col  w-36 justify-center gap-8">
           <div class="flex flex-col items-center gap-1">
-            <div class="" v-if="gamesBeforeLevel3">{{ gamesBeforeLevel3 }} Games left</div>
-            <button :class="level === 6 ? ' text-gray-200' : 'text-gray-800' " @click=" levelUp" class="flex-col flex items-center ">
-              <svg class="w-12 h-12 self-center dark:text-white border-2 p-2 rounded-lg " :class="level === 6 ? 'border-gray-200' : 'border-gray-800'"
+            <div class="" v-if="gamesBeforeLevel3 && gamesBeforeLevel3 >= 0">{{ gamesBeforeLevel3 }} Games left</div>
+            <button :class="level === 6 ? ' text-gray-200' : 'text-gray-800' " @click=" levelUp"
+                    class="flex-col flex items-center ">
+              <svg class="w-12 h-12 self-center dark:text-white border-2 p-2 rounded-lg "
+                   :class="level === 6 ? 'border-gray-200' : 'border-gray-800'"
                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                    fill="none" viewBox="0 0 10 12">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M9 5 5 1 1 5m8 6L5 7l-4 4"/>
               </svg>
-            <p>Lv Up</p>
+              <p>Lv Up</p>
             </button>
 
             <!--            <button :class="level === 6 ? 'disabledSecondaryButton' : 'buttonSecondary'" @click=" levelUp
@@ -53,14 +65,16 @@
                             @click="levelDown">Level Down
                     </button>-->
           <div class="flex flex-col items-center gap-1">
-            <button class="flex-col flex items-center" :class="{ 'text-gray-200': level === 2, 'text-gray-800': level !== 2 }">
-              <svg class="w-12 h-12 dark:text-white border-2 p-2 rounded-lg" :class="level === 2 ? 'border-gray-200' : 'border-gray-800'"
-                    @click="levelDown"
+            <button class="flex-col flex items-center"
+                    :class="{ 'text-gray-200': level === 2, 'text-gray-800': level !== 2 }">
+              <svg class="w-12 h-12 dark:text-white border-2 p-2 rounded-lg"
+                   :class="level === 2 ? 'border-gray-200' : 'border-gray-800'"
+                   @click="levelDown"
                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 12">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="m1 7 4 4 4-4M1 1l4 4 4-4"/>
               </svg>
-            <p>Lv Down</p>
+              <p>Lv Down</p>
             </button>
 
           </div>
@@ -69,17 +83,20 @@
         </div>
 
       </div>
-      <div class="flex w-full h-18 justify-center align-middle">
-        <div v-if="chooseColor" class="flex items-center gap-4 py-4">
+      <div class="flex w-full h-16 justify-center align-middle py-4">
+        <div v-if="chooseColor" class="flex items-center gap-4">
           <div class="">Choose the latest {{ Object.keys(lastColorIndex)[currentColorGuess] }} square</div>
           <div class="w-12 h-12 rounded-xl"
                :class="['bg-' + Object.keys(lastColorIndex)[currentColorGuess] + '-500']"></div>
         </div>
       </div>
-      <div class="" v-if="feedbackString"> {{ feedbackString }}</div>
+
       <div class="flex gap-8">
-        <button class="buttonSecondary mt-8 mb-4" @click="gameIsInProgress = false">Cancle</button>
-        <button class="mt-8 mb-4" :class="{ 'disabledButton' : gameIsInProgress,  'button': !gameIsInProgress }"
+        <button class=" mb-4"
+                :class="{ 'disabledSecondaryButton' : !gameIsInProgress,  'buttonSecondary': gameIsInProgress }"
+                :disabled='!gameIsInProgress' @click="gameIsInProgress = false">Cancel
+        </button>
+        <button class=" mb-4" :class="{ 'disabledButton' : gameIsInProgress,  'button': !gameIsInProgress }"
                 :disabled='gameIsInProgress' @click="onStart">Start level
         </button>
       </div>
@@ -92,7 +109,7 @@
 </template>
 
 <script>
-import {ref, computed} from 'vue';
+import {ref, computed, watch} from 'vue';
 import Square from '@/components/MemoryGameSquare.vue';
 
 export default {
@@ -104,8 +121,10 @@ export default {
     const squares = ref(Array(9).fill('')); // Initialize with empty strings
     const level = ref(2);
     const gameIsInProgress = ref(false);
-    const feedbackString = ref("")
+    const isCorrect = ref(null)
+    const squaresDisabled = ref(true)
     const gamesBeforeLevel3 = ref(3)
+    const score = ref(0)
     const timeOut = ref(2000);
     const allColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']; // All possible colors
     const chooseColor = ref(null);
@@ -114,6 +133,14 @@ export default {
       return allColors.slice(0, level.value); // Return the first 'level' colors
     });
     const lastColorIndex = ref(null);
+    const scoreChanged = ref(false);
+
+    watch(score, () => {
+      scoreChanged.value = true;
+      setTimeout(() => {
+        scoreChanged.value = false;
+      }, 200); // Adjust the time delay to match the CSS transition duration
+    });
 
     // Every color has to show up the same as the level
     function updateTimeOut() {
@@ -121,6 +148,15 @@ export default {
         timeOut.value = Math.min(level.value * 400 + 1200, 2800);
       }
     }
+
+    watch(isCorrect, (newValue) => {
+      if (newValue !== null) {
+        setTimeout(() => {
+          isCorrect.value = null;
+        }, 1000); // Change the time delay as needed (in milliseconds)
+      }
+    });
+
 
     function levelUp() {
       if (level.value < 6) {
@@ -141,10 +177,11 @@ export default {
       let currentColorIndex = Object.values(lastColorIndex.value)[currentColorGuess.value]
       console.log(currentColorIndex, index)
       if (currentColorIndex === index) {
-        feedbackString.value = "That's correct, Well Done"
+        isCorrect.value = true
+        score.value += level.value
         console.log('correct')
       } else {
-        feedbackString.value = "That's wrong"
+        isCorrect.value = false
         console.log('wrong')
       }
       squares.value[index] = '';
@@ -156,8 +193,9 @@ export default {
         chooseColor.value = false;
         gamesBeforeLevel3.value--
         gameIsInProgress.value = false
+        squaresDisabled.value = true
         /*
-                feedbackString.value = "You are done"
+                isCorrect.value = "You are done"
         */
         console.log('done')
       }
@@ -230,21 +268,22 @@ export default {
                 lastColorIndex.value[randomColor] = randomIndex;
 
 
-
                 // Set a new timeout to revert the color back to gray after 1000 milliseconds
                 timeouts[randomIndex] = setTimeout(() => {
                   colorCounts[squares.value[randomIndex]]--; // Decrement the count for the current color
                   squares.value[randomIndex] = '';
                 }, timeOut.value);
                 resolve();
-              },delay); // Delay each color change by 500 milliseconds
+              }, delay); // Delay each color change by 500 milliseconds
             });
           }
         }
         setTimeout(() => {
           chooseColor.value = true
+          squaresDisabled.value = false
         }, timeOut.value)
       }
+
       updateSquaresWithTimeouts();
     }
 
@@ -263,8 +302,11 @@ export default {
       currentColorGuess,
       timeOut,
       gamesBeforeLevel3,
-      feedbackString,
-      gameIsInProgress
+      isCorrect,
+      squaresDisabled,
+      gameIsInProgress,
+      score,
+      scoreChanged
     };
   },
 };
