@@ -1,17 +1,22 @@
 <template>
   <button
-      class="w-24 h-24 bg-gray-600 rounded-2xl bg-gray-200"
+      class="w-24 h-24 bg-gray-600 rounded-2xl  relative"
       :style="{ backgroundColor: color }"
+      :class="{ 'hover:bg-gray-700' :!disabled}"
       @click="emitChoice"
       :disabled="disabled"
   >
-<!--
-    <span class="text-white">{{color}} {{index}}</span>
--->
+    <span class=" opacity-0 transition-all duration-200 scale-50" :class=" {'opacity-100 scale-100': isCorrect && index === chosenIndex }">
+          <img src="../assets/Correct.png" alt="" class="p-4 absolute inset-0">
+    </span>
+    <span class=" opacity-0 transition-all duration-200 scale-50" :class=" {'opacity-100 scale-100': isFalse & index === chosenIndex }">
+          <img src="../assets/Wrong.png" alt="" class="p-4 absolute inset-0">
+    </span>
   </button>
 </template>
 
 <script>
+
 
 export default {
   name: 'MemorySquareGame',
@@ -28,19 +33,34 @@ export default {
       required: true,
     },
     disabled: {
-      default:true,
+      default: true,
       type: Boolean,
+      required: true,
+    },
+    isCorrect: {
+      default: false,
+      type: Boolean,
+      required: true,
+    },
+    isFalse: {
+      default: false,
+      type: Boolean,
+      required: true,
+    },
+    chosenIndex: {
+      default: -1,
+      type: Number,
       required: true,
     }
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
+
     const emitChoice = () => {
       emit('choice', props.index);
-      console.log(props.index)
     };
 
 
-    return { emitChoice };
+    return {emitChoice};
   }
 };
 </script>

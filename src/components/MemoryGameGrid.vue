@@ -2,33 +2,37 @@
   <div class="flex justify-center items-center min-h-screen">
     <div class="flex flex-col gap-2 items-center">
 
-      <h2 class="text-5xl font-bold">Current Level: {{ level }}</h2>
-      <div class="flex gap-2 items-center pt-4">
-        <h2>Current colors:</h2>
+      <h2 class="k1:text-5xl text-4xl k1:mt-0 mt-6 font-bold">Current Level: {{ level }}</h2>
 
+      <div class="w-36 flex justify-center items-center ">
+        <p class="transition-transform duration-200 transform font-bold text-2xl"
+            :class="{ '-translate-y-0' : totalRounds }">
+          Round: {{currentRoundNumber}} / {{ totalRounds}}
+        </p>
+      </div>
+      <div class="flex gap-2 items-center py-4 ">
+        <h2>Current colors:</h2>
         <div v-for="(color, index) in colors" :key="index" class="w-8 h-8 rounded-md"
              :class="`bg-${color}-500`"></div>
       </div>
-      <div class="flex flex-col relative items-center h-8 w-full">
-        <p class="absolute inset-0 top-5 text-green-500 text-xl transition-all duration-200 transform translate-y-0" :class="{ 'opacity-100 transform -translate-y-5': isCorrect, 'opacity-0': !isCorrect }" >That's correct, Well Done</p>
-        <p class="absolute inset-0 top-5 text-red-500 text-xl transition-all duration-200  transform translate-y-0" :class="{ 'opacity-100 transform -translate-y-5': isCorrect === false, 'opacity-0': isCorrect === true || isCorrect === null  }">That's wrong</p>
-      </div>
-      <!--        <div class="w-8 h-8 rounded-md bg-red-500">
-              </div>
-              <div class="w-8 h-8 rounded-md bg-blue-500">
-              </div>
-              <div class="w-8 h-8 rounded-md bg-purple-500">
-              </div>
-              <div class="w-8 h-8 rounded-md bg-green-500">
-              </div>
-              <div class="w-8 h-8 rounded-md bg-yellow-500">
-              </div>
-              <div class="w-8 h-8 rounded-md bg-orange-500">
-              </div>-->
-      <div class="flex gap-4 h-full relative">
-        <div class="w-36 flex justify-center items-center ">
-          <p2 class="transition-transform duration-200 transform font-bold text-2xl" :class="{ '-translate-y-2': scoreChanged }">Score: {{ score }}</p2>
+      <div class="flex flex-col k1:flex-row gap-4 h-full relative">
+        <div class="w-40 flex flex-col justify-center items-center ">
+          <div class="flex justify-between text-md font-bold w-40">
+          <p class="transition-transform duration-200 transform font-bold text-2xl"
+              > Score:
+          </p>
+          <p class="transition-transform duration-200 transform font-bold text-2xl"
+              :class="{ '-translate-y-2': scoreChanged }"> {{ score }} / {{ totalRounds }}
+          </p>
 
+          </div>
+          <div class="flex justify-between text-md font-bold w-40">
+
+          <h2 class="">Total Score : </h2>
+            <h2>
+              {{ scoreTotal}} / 12
+            </h2>
+          </div>
         </div>
         <div class="grid grid-cols-3 gap-3">
           <Square
@@ -38,14 +42,17 @@
               :index="index"
               @choice="onChoice(index)"
               :disabled="squaresDisabled"
+              :isCorrect="isCorrect"
+              :isFalse="isFalse"
+              :chosenIndex="chosenIndex"
           />
 
         </div>
-        <div class="flex flex-col  w-36 justify-center gap-8">
+        <div class="flex flex-col w-full  k1:w-40 justify-center gap-8">
           <div class="flex flex-col items-center gap-1">
-            <div class="" v-if="gamesBeforeLevel3 && gamesBeforeLevel3 >= 0">{{ gamesBeforeLevel3 }} Games left</div>
-            <button :class="level === 6 ? ' text-gray-200' : 'text-gray-800' " @click=" levelUp"
-                    class="flex-col flex items-center ">
+
+            <button v-if="level < 5 && showLevelUp" :class="level === 6 ? ' text-gray-200' : 'text-gray-800' " @click=" levelUp"
+                    class="flex-col k1:static absolute right-0 top-0 flex items-center ">
               <svg class="w-12 h-12 self-center dark:text-white border-2 p-2 rounded-lg "
                    :class="level === 6 ? 'border-gray-200' : 'border-gray-800'"
                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +60,7 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M9 5 5 1 1 5m8 6L5 7l-4 4"/>
               </svg>
-              <p>Lv Up</p>
+              Lv Up {{level + 1}}
             </button>
 
             <!--            <button :class="level === 6 ? 'disabledSecondaryButton' : 'buttonSecondary'" @click=" levelUp
@@ -64,40 +71,44 @@
                             :class="{ 'disabledSecondaryButton': level === 2, 'buttonSecondary': level !== 2 }"
                             @click="levelDown">Level Down
                     </button>-->
-          <div class="flex flex-col items-center gap-1">
+<!--          <div class="flex flex-col items-center gap-1">
             <button class="flex-col flex items-center"
-                    :class="{ 'text-gray-200': level === 2, 'text-gray-800': level !== 2 }">
+                    :class="{ 'text-gray-200': level === 1, 'text-gray-800': level !== 1 }">
               <svg class="w-12 h-12 dark:text-white border-2 p-2 rounded-lg"
-                   :class="level === 2 ? 'border-gray-200' : 'border-gray-800'"
+                   :class="level === 1 ? 'border-gray-200' : 'border-gray-800'"
                    @click="levelDown"
                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 12">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="m1 7 4 4 4-4M1 1l4 4 4-4"/>
               </svg>
-              <p>Lv Down</p>
+              Lv Down
             </button>
 
-          </div>
+          </div>-->
 
           <!--        :disabled=" gamesBeforeLevel3> 4"-->
         </div>
 
       </div>
-      <div class="flex w-full h-16 justify-center align-middle py-4">
-        <div v-if="chooseColor" class="flex items-center gap-4">
-          <div class="">Choose the latest {{ Object.keys(lastColorIndex)[currentColorGuess] }} square</div>
+      <div class="flex w-full k1:h-16 h-10 justify-center align-middle ">
+        <div v-if="chooseColor && !showTryAgain" class="flex items-center gap-4">
+          <div class="">Where did you last see this color?<!--:
+            {{ Object.keys(lastColorIndex)[currentColorGuess] }}--> </div>
           <div class="w-12 h-12 rounded-xl"
                :class="['bg-' + Object.keys(lastColorIndex)[currentColorGuess] + '-500']"></div>
+        </div>
+        <div class="flex items-center gap-4" v-if="showTryAgain">
+          <h1 class="text-lg text-red-500">Oh no, that’s not right! Try again next round.</h1>
         </div>
       </div>
 
       <div class="flex gap-8">
-        <button class=" mb-4"
+<!--        <button class=" mb-4"
                 :class="{ 'disabledSecondaryButton' : !gameIsInProgress,  'buttonSecondary': gameIsInProgress }"
                 :disabled='!gameIsInProgress' @click="gameIsInProgress = false">Cancel
-        </button>
-        <button class=" mb-4" :class="{ 'disabledButton' : gameIsInProgress,  'button': !gameIsInProgress }"
-                :disabled='gameIsInProgress' @click="onStart">Start level
+        </button>-->
+        <button class=" mb-4" :class="{ 'disabledButton' : gameIsInProgress || showLevelUp ,  'button': !gameIsInProgress }"
+                :disabled='gameIsInProgress' @click="onStart">Start round {{currentRoundNumber}}
         </button>
       </div>
 
@@ -114,24 +125,32 @@ import Square from '@/components/MemoryGameSquare.vue';
 
 export default {
   name: 'MemoryGameGrid',
+ emits: ['end'],
   components: {
     Square
   },
-  setup() {
+  setup(_, {emit}) {
     const squares = ref(Array(9).fill('')); // Initialize with empty strings
-    const level = ref(2);
+    const level = ref(1);
     const gameIsInProgress = ref(false);
-    const isCorrect = ref(null)
+    const isCorrect = ref(false)
+    const isFalse = ref(false)
     const squaresDisabled = ref(true)
-    const gamesBeforeLevel3 = ref(3)
+    const currentRoundNumber = ref(1)
     const score = ref(0)
+    const scoreTotal = ref(0)
+    const showLevelUp = ref(false)
+    const totalRounds = 3
     const timeOut = ref(2000);
-    const allColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']; // All possible colors
+    const chosenIndex = ref(-1)
+    const allColors = ['red', 'blue', 'green', 'yellow', 'purple']; // All possible colors
     const chooseColor = ref(null);
     const currentColorGuess = ref(0);
     const colors = computed(() => {
-      return allColors.slice(0, level.value); // Return the first 'level' colors
+      return allColors.slice(0, level.value + 1); // Return the first 'level' colors
     });
+    const showTryAgain = ref(false);
+
     const lastColorIndex = ref(null);
     const scoreChanged = ref(false);
 
@@ -144,63 +163,95 @@ export default {
 
     // Every color has to show up the same as the level
     function updateTimeOut() {
-      if (level.value >= 2 && level.value <= 5) {
-        timeOut.value = Math.min(level.value * 400 + 1200, 2800);
+      if (level.value >= 1 && level.value <= 4) {
+        timeOut.value = Math.min((level.value + 1) * 400 + 1200, 2800);
       }
     }
 
     watch(isCorrect, (newValue) => {
       if (newValue !== null) {
         setTimeout(() => {
-          isCorrect.value = null;
+          isCorrect.value = false;
+        }, 1000); // Change the time delay as needed (in milliseconds)
+      }
+    });
+    watch(isFalse, (newValue) => {
+      if (newValue !== null) {
+        setTimeout(() => {
+          isFalse.value = false;
         }, 1000); // Change the time delay as needed (in milliseconds)
       }
     });
 
 
     function levelUp() {
-      if (level.value < 6) {
+      if (level.value < 4) {
         level.value++;
+        score.value = 0
+        currentRoundNumber.value = 1
+        showLevelUp.value = false;
         updateTimeOut();
       }
     }
 
     function levelDown() {
-      if (level.value > 2) {
+      if (level.value > 1) {
         level.value--;
         updateTimeOut();
       }
     }
-
+    watch(showTryAgain, (newValue) => {
+      if (newValue !== null) {
+        setTimeout(() => {
+          showTryAgain.value = false;
+        }, 2000); // Change the time delay as needed (in milliseconds)
+      }
+    });
     const onChoice = (index) => {
-      console.log(Object.values(lastColorIndex.value)[currentColorGuess.value])
+      chosenIndex.value = index;
       let currentColorIndex = Object.values(lastColorIndex.value)[currentColorGuess.value]
-      console.log(currentColorIndex, index)
+
       if (currentColorIndex === index) {
+        //Correct answer
         isCorrect.value = true
-        score.value += level.value
-        console.log('correct')
       } else {
-        isCorrect.value = false
-        console.log('wrong')
+        //Wrong answer
+        isFalse.value = true;
+        showTryAgain.value = true;
+        if (level.value === 4 && currentRoundNumber.value === 3){
+          console.log("emit that we are done with the game here", )
+          emit('end', scoreTotal.value)
+        }
+        resetValues()
+        return
       }
       squares.value[index] = '';
-      if (currentColorGuess.value < level.value - 1) {
+      if (currentColorGuess.value < level.value) {
+        //Next move
+        //this should only happen when it's not a wrong answer
         currentColorGuess.value++;
-        console.log('next')
       } else {
-        currentColorGuess.value = 0;
-        chooseColor.value = false;
-        gamesBeforeLevel3.value--
-        gameIsInProgress.value = false
-        squaresDisabled.value = true
-        /*
-                isCorrect.value = "You are done"
-        */
-        console.log('done')
+        //Game done
+        score.value++
+        scoreTotal.value++
+        if (level.value === 4 && currentRoundNumber.value === 3){
+          emit('end', scoreTotal.value)
+          console.log("emit that we are done with the game here", )
+        }
+        resetValues()
       }
     }
-
+    const resetValues = () => {
+      chooseColor.value = false;
+      gameIsInProgress.value = false
+      squaresDisabled.value = true
+      currentColorGuess.value = 0;
+      if (currentRoundNumber.value <= 2){
+        currentRoundNumber.value ++
+      }else {
+        showLevelUp.value = true
+      }
+    }
     function shuffle(array) {
       let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -222,6 +273,7 @@ export default {
 
     function onStart() {
       gameIsInProgress.value = true;
+      showTryAgain.value = false;
       // Initialize an array to hold timeout IDs for each square
       const timeouts = Array(squares.value.length).fill(null);
 
@@ -231,11 +283,20 @@ export default {
       // Initialize an object to track the last grid index where each color was used
       lastColorIndex.value = colors.value.reduce((indices, color) => ({...indices, [color]: null}), {});
 
+
+      const getRandomNumber = () => {
+        const min = 1;
+        const max = level.value + 2;
+        return Math.floor(Math.random() * (max - min) + min);
+      };
       // Create an array of all the colors that will be used
       let allColors = [];
-      for (let i = 0; i < level.value; i++) {
-        allColors = allColors.concat(colors.value);
-      }
+      colors.value.forEach((color) => {
+        const randomCount = getRandomNumber();
+        for (let i = 0; i < randomCount; i++) {
+          allColors.push(color);
+        }
+      });
 
       // Shuffle the array of colors
       let shuffledColors = shuffle(allColors);
@@ -279,8 +340,8 @@ export default {
           }
         }
         setTimeout(() => {
-          chooseColor.value = true
-          squaresDisabled.value = false
+          chooseColor.value = true;
+          squaresDisabled.value = false;
         }, timeOut.value)
       }
 
@@ -301,12 +362,18 @@ export default {
       chooseColor,
       currentColorGuess,
       timeOut,
-      gamesBeforeLevel3,
+      currentRoundNumber,
       isCorrect,
+      isFalse,
       squaresDisabled,
       gameIsInProgress,
       score,
-      scoreChanged
+      totalRounds,
+      scoreChanged,
+      chosenIndex,
+      showLevelUp,
+      scoreTotal,
+      showTryAgain
     };
   },
 };
