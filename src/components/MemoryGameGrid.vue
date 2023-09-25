@@ -141,6 +141,7 @@ export default {
     const scoreTotal = ref(0)
     const showLevelUp = ref(false)
     const totalRounds = 3
+    const totalLevel = 3
     const timeOut = ref(2000);
     const chosenIndex = ref(-1)
     const allColors = ['red', 'blue', 'green', 'yellow', 'purple']; // All possible colors
@@ -163,8 +164,8 @@ export default {
 
     // Every color has to show up the same as the level
     function updateTimeOut() {
-      if (level.value >= 1 && level.value <= 4) {
-        timeOut.value = Math.min((level.value + 1) * 400 + 1200, 2800);
+      if (level.value >= 1 && level.value <= totalLevel) {
+        timeOut.value = Math.min((level.value) * 400 + 1600, 2800);
       }
     }
 
@@ -185,7 +186,7 @@ export default {
 
 
     function levelUp() {
-      if (level.value < 4) {
+      if (level.value < totalLevel) {
         level.value++;
         score.value = 0
         currentRoundNumber.value = 1
@@ -211,6 +212,12 @@ export default {
       chosenIndex.value = index;
       let currentColorIndex = Object.values(lastColorIndex.value)[currentColorGuess.value]
 
+      function checkForLastRound() {
+        if (level.value === totalLevel  && currentRoundNumber.value ===  totalRounds) {
+          emit('end', scoreTotal.value)
+        }
+      }
+
       if (currentColorIndex === index) {
         //Correct answer
         isCorrect.value = true
@@ -218,10 +225,7 @@ export default {
         //Wrong answer
         isFalse.value = true;
         showTryAgain.value = true;
-        if (level.value === 4 && currentRoundNumber.value === 3){
-          console.log("emit that we are done with the game here", )
-          emit('end', scoreTotal.value)
-        }
+        checkForLastRound();
         resetValues()
         return
       }
@@ -234,10 +238,7 @@ export default {
         //Game done
         score.value++
         scoreTotal.value++
-        if (level.value === 4 && currentRoundNumber.value === 3){
-          emit('end', scoreTotal.value)
-          console.log("emit that we are done with the game here", )
-        }
+        checkForLastRound()
         resetValues()
       }
     }

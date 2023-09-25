@@ -9,10 +9,16 @@
           Round: 1 / 1
         </p>
       </div>
+        <div class="bg-red-500"></div>
+        <div class="bg-blue-500"></div>
+        <div class="bg-green-500"></div>
+        <div class="bg-yellow-500"></div>
+        <div class="bg-purple-500"></div>
       <div class="flex gap-2 items-center py-4 ">
         <h2>Current colors:</h2>
-        <div v-for="(color, index) in colors" :key="index" class="w-8 h-8 rounded-md"
-             :class="`bg-${color}-500`"></div>
+        <div  v-for="(color, index) in colors" :key="index" class="w-8 h-8 rounded-md  "
+             :class="{[`bg-${color}-500`] : true}">
+        </div>
       </div>
       <div class="grid grid-cols-3 gap-3">
         <Square
@@ -72,12 +78,16 @@ export default {
     const colors = ['red', 'blue'];
     const chooseColor = ref(null);
     const currentColorGuess = ref(0);
-    const lastColorIndex = ref(null);
+    const lastColorIndex = ref({});
     const showTryAgain = ref(false);
 
     const onChoice = (index) => {
       chosenIndex.value = index;
       let currentColorIndex = Object.values(lastColorIndex.value)[currentColorGuess.value]
+      
+
+
+
       if (currentColorIndex === index) {
         //Correct answer
         isCorrect.value = true

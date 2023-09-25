@@ -4,10 +4,9 @@
     <TutorialGame @tutorialEnd="showGameModal"/>
   </div>
   <GameModal :show="isShowGameModal" @start="startGame" />
-  <div v-if="gameStarted" :class="{ 'blur-xl': isShowGameModal  }">
+  <div v-if="gameStarted" :class="{ 'blur-xl': isShowGameModal || isEndGame  }">
     <MemoryGameGrid @end="endGame"   />
   </div>
-
   <DoneGameModal :totalPoints="totalScoreFromChild" :show="isEndGame"/>
 </template>
 
@@ -39,8 +38,10 @@ export default {
       tutorialStarted.value = true;
     }
     const endGame = (totalscore) => {
-      isEndGame.value = true;
       totalScoreFromChild.value = totalscore
+      setTimeout(() => {
+      isEndGame.value = true;
+      }, 500);
     }
     const startGame = () => {
       isShowGameModal.value = false;

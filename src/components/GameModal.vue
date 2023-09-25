@@ -6,21 +6,21 @@
       </h1>
     </template>
     <template #body>
-      Now you are ready to begin the game.
+      Now you are ready to begin the game. <br>
       You will play through
       <span class="font-extrabold">
       4 levels.
-      </span>
+      </span><br>
       Each level has
       <span class="font-extrabold">
         3 rounds.
-      </span>
+      </span> <br>
       Good luck!
     </template>
 
     <template #button>
       <button @click="start" class="button ">
-        Start Level 1
+        Start
       </button>
     </template>
   </LInfo>

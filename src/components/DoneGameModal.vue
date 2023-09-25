@@ -22,6 +22,7 @@
 
 <script>
 import LInfo from "@/components/layout/LInfo.vue";
+import router from "@/router";
 
 export default {
   name: "DoneGameModal",
@@ -42,6 +43,7 @@ export default {
   setup() {
     const end = () => {
       //GO back to homepage here
+      router.push('/');
       console.log("go home here", )
     }
     return {

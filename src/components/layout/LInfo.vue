@@ -1,6 +1,6 @@
 <template>
   <div
-      class="fixed z-50 k1:p-12 p-8  k1:min-h-2/3 min-h-5/6  max-w-screen  w-11/12 k1:w-3/5  transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+      class="fixed z-50 k1:p-12 p-8  k1:min-h-2/3 min-h-5/6 max-w-screen w-11/12 k1:w-1/2 transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
       bg-slate-700  bg-opacity-75 backdrop-blur-2xl backdrop-brightness-125
       rounded-3xl shadow-gray-600 shadow-2xl overflow-x-hidden opacity-0
       scale-0 transition-all duration-500"
